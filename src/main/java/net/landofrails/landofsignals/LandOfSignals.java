@@ -14,6 +14,7 @@ import cam72cam.mod.render.BlockRender;
 import cam72cam.mod.render.GlobalRender;
 import cam72cam.mod.render.ItemRender;
 import cam72cam.mod.resource.Identifier;
+import net.landofrails.catenary.Catenary;
 import net.landofrails.landofsignals.gui.overlay.ManipualtorOverlay;
 import net.landofrails.landofsignals.packet.ManipulatorToClientPacket;
 import net.landofrails.landofsignals.packet.ManipulatorToServerPacket;
@@ -55,8 +56,10 @@ public class LandOfSignals extends ModCore.Mod {
     @Override
     public void commonEvent(ModEvent event) {
 
-		// Stellwand commonEvent
+		// Stellwand
 		Stellwand.commonEvent(event);
+		// Catenary
+		Catenary.commonEvent(event);
 
         if (event == ModEvent.CONSTRUCT) {
             ModCore.Mod.info("Thanks for using LandOfSignals. Starting common construct now...");
@@ -84,6 +87,8 @@ public class LandOfSignals extends ModCore.Mod {
 
         // Stellwand
         Stellwand.clientEvent(event);
+		// Catenary
+		Catenary.clientEvent(event);
 
         switch (event) {
             case CONSTRUCT:
@@ -152,7 +157,9 @@ public class LandOfSignals extends ModCore.Mod {
 
     @Override
     public void serverEvent(ModEvent event) {
-        // Do nothing for now
+		// Stellwand
         Stellwand.serverEvent(event);
+		// Catenary
+		Catenary.serverEvent(event);
     }
 }
