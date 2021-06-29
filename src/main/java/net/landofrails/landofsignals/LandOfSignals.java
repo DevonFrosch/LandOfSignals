@@ -16,6 +16,7 @@ import net.landofrails.landofsignals.render.item.ItemSignalPartAnimatedRender;
 import net.landofrails.landofsignals.render.item.ItemSignalPartRender;
 import net.landofrails.landofsignals.render.item.ObjItemRender;
 import net.landofrails.landofsignals.tile.*;
+import net.landofrails.landofsignals.utils.RenderLibInit;
 import net.landofrails.landofsignals.utils.contentpacks.ContentPackHandler;
 import net.landofrails.stellwand.Stellwand;
 
@@ -40,6 +41,8 @@ public class LandOfSignals extends ModCore.Mod {
 
         // Stellwand commonEvent
         Stellwand.commonEvent(event);
+
+        RenderLibInit.initRenderLib();
 
         if (event == ModEvent.CONSTRUCT) {
             ModCore.Mod.info("Thanks for using LandOfSignals. Starting common construct now...");

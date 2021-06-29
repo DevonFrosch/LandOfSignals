@@ -8,7 +8,6 @@ import cam72cam.mod.serialization.TagCompound;
 import cam72cam.mod.serialization.TagField;
 import net.landofrails.landofsignals.LOSBlocks;
 import net.landofrails.landofsignals.LOSItems;
-import net.landofrails.landofsignals.utils.AnimationHandler;
 import net.landofrails.landofsignals.utils.IManipulate;
 
 public class TileSignalPartAnimated extends BlockEntityTickable implements IManipulate {
@@ -27,13 +26,9 @@ public class TileSignalPartAnimated extends BlockEntityTickable implements IMani
     private boolean active;
     private float partRotate = 0;
 
-    AnimationHandler animationHandler;
-
     public TileSignalPartAnimated(String id, int rot) {
         this.blockRotate = rot;
         this.id = id;
-        if (id != null)
-            this.animationHandler = new AnimationHandler(LOSBlocks.BLOCK_SIGNAL_PART_ANIMATED.getAniamtions(id));
     }
 
     @Override

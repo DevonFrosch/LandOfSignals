@@ -23,8 +23,9 @@ public class ContentPackHandler {
 
     public static void loadAssets() {
 
-        File assetFolder = new File("./config/landofsignals");
+        File assetFolder = new File("./config/landofsignals/temp");
         if (assetFolder.exists()) {
+            assetFolder = new File("./config/landofsignals");
             ModCore.Mod.info("Searching for assets..");
 
             File[] assets = assetFolder.listFiles((dir, name) -> name.endsWith(".zip"));

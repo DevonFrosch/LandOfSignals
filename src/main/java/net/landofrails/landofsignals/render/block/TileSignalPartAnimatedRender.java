@@ -1,18 +1,21 @@
 package net.landofrails.landofsignals.render.block;
 
 import cam72cam.mod.math.Vec3d;
-import cam72cam.mod.model.obj.OBJModel;
-import cam72cam.mod.render.OpenGL;
 import cam72cam.mod.render.StandardModel;
-import cam72cam.mod.render.obj.OBJRender;
 import cam72cam.mod.resource.Identifier;
+import friedrichlp.renderlib.library.RenderMode;
+import friedrichlp.renderlib.model.ModelLoaderProperty;
+import friedrichlp.renderlib.render.ViewBoxes;
+import friedrichlp.renderlib.tracking.*;
 import net.landofrails.landofsignals.LOSBlocks;
 import net.landofrails.landofsignals.LandOfSignals;
 import net.landofrails.landofsignals.tile.TileSignalPartAnimated;
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
+import net.landofrails.landofsignals.utils.IdentifierFileContainer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TileSignalPartAnimatedRender {
 
@@ -20,7 +23,7 @@ public class TileSignalPartAnimatedRender {
 
     }
 
-    private static final Map<String, Pair<OBJModel, OBJRender>> cache = new HashMap<>();
+    private static final Map<String, RenderObject> cache = new HashMap<>();
     private static final List<String> groupNames = Arrays.asList("wing");
 
     public static StandardModel render(TileSignalPartAnimated tsp) {
@@ -29,50 +32,26 @@ public class TileSignalPartAnimatedRender {
 
     private static void renderStuff(TileSignalPartAnimated tsp, float partialTicks) {
         String id = tsp.getId();
-        if (!cache.containsKey("flare")) {
-            try {
-                OBJModel flareModel = new OBJModel(new Identifier(LandOfSignals.MODID, "models/block/landofsignals/lamp/flare.obj"), 0);
-                OBJRender flareRenderer = new OBJRender(flareModel);
-                cache.put("flare", Pair.of(flareModel, flareRenderer));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         if (!cache.containsKey(id)) {
             try {
-                OBJModel model = new OBJModel(new Identifier(LandOfSignals.MODID, LOSBlocks.BLOCK_SIGNAL_PART_ANIMATED.getPath(id)), 0);
-                OBJRender renderer = new OBJRender(model, LOSBlocks.BLOCK_SIGNAL_PART_ANIMATED.getStates(id));
-                cache.put(id, Pair.of(model, renderer));
+                Identifier identifier = new Identifier(LandOfSignals.MODID, LOSBlocks.BLOCK_SIGNAL_PART_ANIMATED.getPath(id));
+                IdentifierFileContainer identifierContainer = new IdentifierFileContainer(identifier);
+                ModelInfo model = ModelManager.registerModel(identifierContainer, new ModelLoaderProperty(0.0f));
+                RenderLayer layer = RenderManager.addRenderLayer(ViewBoxes.ALWAYS);
+                RenderObject object = layer.addRenderObject(model);
+                cache.put(id, object);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        OBJRender renderer = cache.get(id).getRight();
-        List<String> groupsWithoutWing = new ArrayList<>();
-        for (String s : renderer.model.groups()) groupsWithoutWing.add(s);
-        boolean wingsExist = groupsWithoutWing.containsAll(groupNames);
-        groupsWithoutWing.removeAll(groupNames);
 
-        try (OpenGL.With matrix = OpenGL.matrix(); OpenGL.With tex = renderer.bindTexture(tsp.getAnimationOrTextureName())) {
-            Vec3d scale = LOSBlocks.BLOCK_SIGNAL_PART.getScaling(id);
-            GL11.glScaled(scale.x, scale.y, scale.z);
-            Vec3d trans = LOSBlocks.BLOCK_SIGNAL_PART.getTranslation(id).add(tsp.getOffset());
-            GL11.glTranslated(trans.x, trans.y, trans.z);
-            GL11.glRotated(tsp.getBlockRotate(), 0, 1, 0);
-            renderer.drawGroups(groupsWithoutWing);
-
-            if (wingsExist) {
-                Vec3d center = renderer.model.centerOfGroups(groupNames);
-                center = new Vec3d(-center.x, -center.y, -center.z);
-                Vec3d rotateYaw = center.rotateYaw(tsp.getPartRotate());
-
-                GL11.glTranslated(0, -center.y, 0);
-                GL11.glRotatef(tsp.getPartRotate(), 1, 0, 0);
-                GL11.glTranslated(0, rotateYaw.y, 0);
-
-                renderer.drawGroups(groupNames);
-            }
-        }
+        RenderObject object = cache.get(id);
+        Vec3d scale = LOSBlocks.BLOCK_SIGNAL_PART.getScaling(id);
+        object.transform.scale((float) scale.x, (float) scale.y, (float) scale.z);
+        Vec3d trans = LOSBlocks.BLOCK_SIGNAL_PART.getTranslation(id).add(tsp.getOffset());
+        object.transform.translate((float) trans.x, (float) trans.y, (float) trans.z);
+        object.transform.rotate(0, tsp.getBlockRotate(), 0);
+        RenderManager.render(object.layer, RenderMode.USE_CUSTOM_MATS);
 
 //        OBJRender flareRenderer = cache.get("flare").getRight();
 //

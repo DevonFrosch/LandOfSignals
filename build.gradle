@@ -8,6 +8,25 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.wynprice.cursemaven" version "2.1.1"
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    shade("io.gitlab.friedrichlp:renderlib:1.0.0-pre2") {
+        exclude group: "*"
+    }
+}
+
 apply plugin: 'cam72cam.universalmodcore'
 apply plugin: 'maven'
 
